@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto scroller for music</title>
+    <style>
+        body{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #lyricStage{
+            width: 50vw;
+            min-width: 50vw;
+            height: 50vh;
+            background-color: rgba(255, 0, 0, 0.192);
+            overflow-y: scroll;
+            border: black;
+            border-radius: 20px;
+            border-style: solid;
+            padding: 10px;
+            resize: horizontal;
+        }
+
+        #controlMenu{
+            padding: 10px;
+            display: flex;
+            flex-direction: row;
+            align-content: stretch;
+            align-items: stretch;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- <textarea name="" id="" cols="30" rows="10"></textarea> -->
+    <div id="lyricStage" contenteditable="true"></div>
+
+    <div id="controlMenu">
+        <button id="start">Start</button>
+        <button id="stop">Stop</button>
+        <button id="scrollToTop" onclick="lyricStage.scroll({top: 0})">🔝</button>
+    
+        <button id="minusScrollInterval" onclick="speedUpScrollInterval()">Speed up</button>
+        <button id="plusScrollInterval" onclick="speedDownScrollInterval()">Speed down</button>      
+    </div>
+    
+    <script>
+        let $ = (selector) => document.querySelector(selector);
+        let $$ = (selector) => document.querySelectorAll(selector);
+
+        let lyricStage = $('#lyricStage');
+        window.number_of_pixels_to_scroll = 10;
+        window.scroll_interval_in_ms = 1000;
+
+        function endScroll() {
+            console.debug('Stopping scroll!');
+            if (window.scrollIntervalID) clearInterval(window.scrollIntervalID);
+            window.scrollIntervalID = null;
+        }
+
+        function startScroll() {
+            window.scrollIntervalID = setInterval(() => {
+
+                console.debug(`scrollTop: ${lyricStage.scrollTop}px`);
+                console.debug(`Scroll height: ${lyricStage.clientHeight + lyricStage.scrollTop}/${lyricStage.scrollHeight} px`)
+                console.debug(`Scroll interval: ${window.scroll_interval_in_ms} ms`);
+                console.debug(' ')
+
+                if (lyricStage.clientHeight + lyricStage.scrollTop >= lyricStage.scrollHeight) {
+                    endScroll();
+                }
+
+                lyricStage.scroll({
+                    top: lyricStage.scrollTop + window.number_of_pixels_to_scroll,
+                    behaviour: 'smooth'
+                })
+
+            }, window.scroll_interval_in_ms)
+        }
+
+        function speedUpScrollInterval() {
+            window.scroll_interval_in_ms -= 100;
+            if (window.scrollIntervalID) clearInterval(window.scrollIntervalID);
+            startScroll();
+        }
+
+        function speedDownScrollInterval() {
+                window.scroll_interval_in_ms += 100;
+                if (window.scrollIntervalID) clearInterval(window.scrollIntervalID);
+                startScroll();
+            }
+
+       
+
+        $('#start').addEventListener('click', (e) =>{
+             if (window.scrollIntervalID) {
+                console.debug('scrollIntervalID already running...')
+                return;
+            }
+            startScroll();
+        })
+
+        $('#stop').addEventListener('click', (e) =>{
+          endScroll();
+        })
+
+
+
+     
+    </script>
+</body>
+</html>
