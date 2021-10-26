@@ -13,6 +13,20 @@
             align-items: center;
         }
 
+        .counterContainer{
+            visibility: hidden;
+            font-weight: bold;
+            font-size: x-large;
+            background: #ff000042;
+            padding: 10px;
+            border-radius: 15px;
+            margin: 10px;
+        }
+
+        .counterContainer span{
+            color: green;
+        }
+
         #lyricStage{
             width: 50vw;
             min-width: 50vw;
@@ -45,6 +59,9 @@
 </head>
 <body>
     <!-- <textarea name="" id="" cols="30" rows="10"></textarea> -->
+    <div class="counterContainer">
+        Starting in <span id="counter">3</span>
+    </div>
     <div id="lyricStage" contenteditable="true"></div>
 
     <div id="controlMenu">
@@ -64,6 +81,7 @@
         window.number_of_pixels_to_scroll = 10;
         window.scroll_interval_in_ms = 1000;
         window.is_running = false;
+        window.startDelay = 3000;
 
         function endScroll() {
             console.debug('Stopping scroll!');
@@ -74,6 +92,7 @@
 
         function startScroll() {
             window.is_running = true;
+
             window.scrollIntervalID = setInterval(() => {
 
                 console.debug(`scrollTop: ${lyricStage.scrollTop}px`);
@@ -112,7 +131,22 @@
                 console.debug('scrollIntervalID already running...')
                 return;
             }
-            startScroll();
+
+            let counterElement = $('#counter');
+            counterElement.innerText = startDelay/1000;
+            $('.counterContainer').style.visibility = "visible";
+
+            let tickTack = setInterval(() =>{
+                console.debug('tick tock..')
+                counterElement.innerText = parseInt(counterElement.innerText) >= 0 ? parseInt(counterElement.innerText) - 1 : 0;
+            }, 1000)
+            
+            setTimeout(() => {
+                startScroll();
+                clearInterval(tickTack);
+                $('.counterContainer').style.visibility = "hidden";
+            }, window.startDelay);
+
         })
 
         $('#stop').addEventListener('click', (e) =>{
