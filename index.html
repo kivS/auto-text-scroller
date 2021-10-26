@@ -59,14 +59,17 @@
         let lyricStage = $('#lyricStage');
         window.number_of_pixels_to_scroll = 10;
         window.scroll_interval_in_ms = 1000;
+        window.is_running = false;
 
         function endScroll() {
             console.debug('Stopping scroll!');
             if (window.scrollIntervalID) clearInterval(window.scrollIntervalID);
             window.scrollIntervalID = null;
+            window.is_running = false;
         }
 
         function startScroll() {
+            window.is_running = true;
             window.scrollIntervalID = setInterval(() => {
 
                 console.debug(`scrollTop: ${lyricStage.scrollTop}px`);
@@ -112,7 +115,29 @@
           endScroll();
         })
 
+        document.addEventListener('keydown', logKey);
+        function logKey(e) {
+           switch (e.code) {
+               case 'Space':
+                   if(window.is_running) {
+                       endScroll();
+                   } else {
+                       startScroll();
+                   }
+                   break;
 
+                case 'ArrowUp':
+                    speedDownScrollInterval();
+                    break;
+
+                case 'ArrowDown':
+                    speedUpScrollInterval();
+                    break;
+           
+               default:
+                   break;
+           }
+        }
 
      
     </script>
