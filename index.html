@@ -124,7 +124,16 @@
                 startScroll();
             }
 
-       
+        function startDelayTickerDisplay() {
+            let counterElement = $('#counter');
+            counterElement.innerText = startDelay / 1000;
+            $('.counterContainer').style.visibility = "visible";
+
+            window.tickTockTimer = setInterval(() => {
+                console.debug('tick tock..')
+                counterElement.innerText = parseInt(counterElement.innerText) >= 0 ? parseInt(counterElement.innerText) - 1 : 0;
+            }, 1000)
+        }
 
         $('#start').addEventListener('click', (e) =>{
              if (window.scrollIntervalID) {
@@ -132,18 +141,11 @@
                 return;
             }
 
-            let counterElement = $('#counter');
-            counterElement.innerText = startDelay/1000;
-            $('.counterContainer').style.visibility = "visible";
-
-            let tickTack = setInterval(() =>{
-                console.debug('tick tock..')
-                counterElement.innerText = parseInt(counterElement.innerText) >= 0 ? parseInt(counterElement.innerText) - 1 : 0;
-            }, 1000)
+            startDelayTickerDisplay();
             
             setTimeout(() => {
                 startScroll();
-                clearInterval(tickTack);
+                clearInterval(tickTockTimer);
                 $('.counterContainer').style.visibility = "hidden";
             }, window.startDelay);
 
@@ -160,7 +162,13 @@
                    if(window.is_running) {
                        endScroll();
                    } else {
-                       startScroll();
+                       startDelayTickerDisplay();
+                       
+                       setTimeout(() => {
+                           startScroll();
+                           clearInterval(tickTockTimer);
+                           $('.counterContainer').style.visibility = "hidden";
+                       }, window.startDelay);
                    }
                    break;
 
